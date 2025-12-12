@@ -1,3 +1,4 @@
+import VoiceRecorder from "./components/VoiceRecorder";
 // import React, { useState } from 'react'
 // import './App.css'
 
@@ -830,11 +831,19 @@ function Command({ userId, goBack, api }) {
             className="w-full mt-4 p-3 rounded bg-white/5 text-white h-28"
           />
 
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            <button onClick={() => setMessage({ type: "info", text: "🎤 Listening... (Demo mode)" })} className="py-2 rounded bg-white text-indigo-600">🎙️ Start Listening</button>
-            <button onClick={execute} className="py-2 rounded bg-white text-indigo-600">🚀 Execute</button>
-            <button onClick={goBack} className="py-2 rounded border border-white/30 text-white">⬅️ Back</button>
-          </div>
+          <div className="mt-4">
+  <VoiceRecorder />
+
+  <div className="grid grid-cols-2 gap-3 mt-4">
+    <button onClick={execute} className="py-2 rounded bg-white text-indigo-600">
+      🚀 Execute
+    </button>
+
+    <button onClick={goBack} className="py-2 rounded border border-white/30 text-white">
+      ⬅️ Back
+    </button>
+  </div>
+</div>
 
           {message && <div className={`mt-4 ${message.type === "success" ? "text-green-400" : message.type === "error" ? "text-red-400" : "text-yellow-200"}`}>{message.text}</div>}
         </div>
