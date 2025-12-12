@@ -3,7 +3,6 @@
 import pytesseract
 from PIL import Image
 from typing import List, Dict, Union
-from io import BytesIO
 
 
 def extract_text_from_image(image_file: Union[str, "BytesIO"]) -> str:
@@ -17,22 +16,42 @@ def extract_text_from_image(image_file: Union[str, "BytesIO"]) -> str:
 
 
 def parse_bill_text(text: str) -> List[Dict]:
-    import re
+    """
+    Naive parser:
+    Assumes each line is something like:
+        Sugar 1kg 50
+        Oil 1L 120
+
+    Last token = amount, everything before = item name.
+
+    Returns list of:
+        {
+         "item": str,
+         "amount": float,
+         "customer_name": "Walk-in"
+        }
+    """
+    lines = text.splitlines()
     items = []
 
-    pattern = r"(.+?)[\s:]+(\d+\.?\d*)$"   # item name + number at end
-
-    for line in text.splitlines():
+    for line in lines:
         line = line.strip()
         if not line:
             continue
 
-        match = re.search(pattern, line)
-        if not match:
+        parts = line.split()
+        if len(parts) < 2:
             continue
 
-        item_name = match.group(1).strip()
-        amount = float(match.group(2))
+        # Last part is hopefully amount
+        try:
+            amount = float(parts[-1].replace("₹", "").replace(",", ""))
+        except ValueError:
+            continue
+
+        item_name = " ".join(parts[:-1]).strip()
+        if not item_name:
+            continue
 
         items.append({
             "item": item_name,
